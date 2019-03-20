@@ -1,0 +1,201 @@
+#------------------------------
+# Variables
+#------------------------------
+ZDOTDIR=${ZDOTDIR:-${HOME}}
+ZSHDDIR="${HOME}/.config/zsh.d"
+HISTFILE="${ZDOTDIR}/.zsh_history"
+HISTSIZE="1000"
+SAVEHIST="${HISTSIZE}"
+LS_COLORS="rs=0:di=01;34:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:su=37;41:sg=30;43:tw=30;42:ow=34;42:st=37;44:ex=01;32:";
+
+export BROWSER="chrome"
+export EDITOR=$(which subl)
+export LS_COLORS
+
+## -----------------------------------
+## zsh options
+## -----------------------------------
+DIRSTACKSIZE=16
+setopt auto_pushd pushd_silent pushd_to_home
+
+## Remove duplicate entries
+setopt pushd_ignore_dups
+
+## This reverts the +/- operators.
+setopt pushd_minus
+
+# Ignore lines prefixed with '#'.
+setopt interactivecomments
+
+# Ignore duplicate in history.
+setopt hist_ignore_dups
+
+# Prevent record in history entry if preceding them with at least one space
+setopt hist_ignore_space
+
+# Nobody need flow control anymore. Troublesome feature.
+#stty -ixon
+setopt noflowcontrol
+
+# Auto cd into directory by name
+setopt auto_cd
+
+# Ensure that / is added after tab complation to directories.
+# without disabling it, $LBUFFER does not have the slash at the end
+# and it's required for _append_path_to_buffer thing..
+setopt AUTO_PARAM_SLASH
+unsetopt AUTO_REMOVE_SLASH
+
+
+## -----------------------------------
+# Completion
+## -----------------------------------
+# Load zsh completion
+fpath=(/usr/local/share/zsh-completions $fpath)
+
+if type brew &>/dev/null; then
+  FPATH=/usr/local/share/zsh/site-functions:$FPATH
+fi
+
+
+# Completions
+zstyle ':completion:*' menu select=2 select=long-list
+zstyle ':completion:*' rehash true
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+zstyle ':completion:*' completer _expand _complete _ignored _approximate
+zstyle ':completion:*' select-prompt '%SScrolling active: current selection at %p%s'
+zstyle ':completion::complete:*' use-cache 1
+zstyle ':completion:*:descriptions' format '%U%F{cyan}%d%f%u'
+zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
+
+
+#------------------------------
+# Window title
+#------------------------------
+case $TERM in
+  termite|*xterm*|rxvt|rxvt-unicode|rxvt-256color|rxvt-unicode-256color|(dt|k|E)term)
+    precmd () {
+      #vcs_info
+      print -Pn "\e]0;[%n@%M][%~]%#\a"
+    } 
+    preexec () { print -Pn "\e]0;[%n@%M][%~]%# ($1)\a" }
+    ;;
+  screen|screen-256color)
+    precmd () { 
+      #vcs_info
+      print -Pn "\e]83;title \"$1\"\a" 
+      print -Pn "\e]0;$TERM - (%L) [%n@%M]%# [%~]\a" 
+    }
+    preexec () { 
+      print -Pn "\e]83;title \"$1\"\a" 
+      print -Pn "\e]0;$TERM - (%L) [%n@%M]%# [%~] ($1)\a" 
+    }
+    ;; 
+esac
+
+## -----------------------------------
+## iTerm shell integrations
+## -----------------------------------
+
+## Uncomment the following after installing iTerm Shell Integrations from iTerm application menu
+## test -e "${HOME}/.shell_config/iterm2/iterm2_shell_integration.zsh" && source "${HOME}/.shell_config/iterm2/iterm2_shell_integration.zsh"
+
+
+
+#------------------------------
+# Load Zsh tools for syntax highlighting and autosuggestions
+#------------------------------
+source "/usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+source "/usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+
+
+## -----------------------------------
+## Zsh theming and prompts
+## -----------------------------------
+test -e "${HOME}/.shell_config/zsh_theme.sh" && source "${HOME}/.shell_config/zsh_theme.sh"
+
+
+## -----------------------------------
+# Aliases
+## -----------------------------------
+test -e "${HOME}/.shell_config/aliases.sh" && source "${HOME}/.shell_config/aliases.sh"
+
+
+#------------------------------
+# Colored man pages
+#------------------------------
+man() {
+  env \
+    LESS_TERMCAP_mb=$(printf "\e[1;31m") \
+    LESS_TERMCAP_md=$(printf "\e[1;31m") \
+    LESS_TERMCAP_me=$(printf "\e[0m") \
+    LESS_TERMCAP_se=$(printf "\e[0m") \
+    LESS_TERMCAP_so=$(printf "\e[1;44;33m") \
+    LESS_TERMCAP_ue=$(printf "\e[0m") \
+    LESS_TERMCAP_us=$(printf "\e[1;32m") \
+    man "$@"
+}
+
+
+## -----------------------------------
+## NVM
+## -----------------------------------
+export NVM_DIR="$HOME/.nvm"
+
+##### nvm (node version manager) #####
+# placeholder nvm shell function
+# On first use, it will set nvm up properly which will replace the `nvm`
+# shell function with the real one
+nvm() {
+  # This loads nvm
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  
+  # This loads nvm bash_completion
+  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  
+
+    # invoke the real nvm function now
+    nvm "$@"
+}
+
+
+## -----------------------------------
+## SDKMan!
+## THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+## -----------------------------------
+export SDKMAN_DIR="$HOME/.sdkman"
+
+##### sdk (SDKMan!) #####
+# placeholder sdk shell function
+# On first use, it will set sdkman up properly which will replace the `sdk`
+# shell function with the real one
+sdk() {
+  # Load SDKMan!
+    [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+
+    # invoke the real nvm function now
+    sdk "$@"
+}
+
+
+## -----------------------------------
+## Path updates
+## -----------------------------------
+
+# eliminates duplicates in *paths
+typeset -gU cdpath fpath path
+
+# Zsh search path for executable
+path=(
+  /usr/local/{bin,sbin}
+  $path
+)
+
+
+## -----------------------------------
+# Load compinit
+## -----------------------------------
+zmodload zsh/complist 
+autoload -Uz compinit
+compinit
+zstyle :compinstall filename '${HOME}/.zshrc'
+
+

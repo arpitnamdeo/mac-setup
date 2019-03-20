@@ -1,0 +1,21 @@
+# Homebrew fonts 
+tap "caskroom/fonts"
+
+# GNU File, Shell, and Text utilities
+brew "coreutils"
+
+# Fish-like fast/unobtrusive autosuggestions for zsh
+brew "zsh-autosuggestions"
+# Additional completion definitions for zsh
+brew "zsh-completions"
+# Fish shell like syntax highlighting for zsh
+brew "zsh-syntax-highlighting"
+
+# iTerm2 for terminal emulation
+cask "iterm2"
+
+# Fonts
+cask "caskroom/fonts/font-fira-code"
+cask "caskroom/fonts/font-firacode-nerd-font"
+cask "caskroom/fonts/font-firacode-nerd-font-mono"
+cask "caskroom/fonts/font-hack-nerd-font"

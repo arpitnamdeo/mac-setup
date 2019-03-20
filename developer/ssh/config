@@ -1,0 +1,16 @@
+# Default properties
+AddKeysToAgent yes
+UseKeychain yes
+IdentitiesOnly yes
+
+# Default host
+Host *
+	IdentityFile ~/.ssh/id_rsa
+
+# Key for IBM Github
+Host github.ibm.com
+  	HostName github.ibm.com
+  	User git
+  	IdentityFile ~/.ssh/id_rsa_ibm_github
+  	
+# Add more Host sections similar to the one above as needed for other identities

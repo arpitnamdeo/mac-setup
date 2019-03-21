@@ -1,0 +1,1 @@
+The `config` file should go in the `~/.ssh` folder

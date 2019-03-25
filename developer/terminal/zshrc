@@ -140,21 +140,29 @@ man() {
 ## -----------------------------------
 ## NVM
 ## -----------------------------------
-export NVM_DIR="$HOME/.nvm"
 
 ##### nvm (node version manager) #####
-# placeholder nvm shell function
-# On first use, it will set nvm up properly which will replace the `nvm`
-# shell function with the real one
-nvm() {
-  # This loads nvm
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  
-  # This loads nvm bash_completion
-  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  
+## Load Node and NPM Globals lazily
+## On first use, it will set up nvm, node and npm globals properly and replace the 
+## shell functions with the real one
 
-    # invoke the real nvm function now
-    nvm "$@"
+export NVM_DIR="$HOME/.nvm"
+declare -a NODE_GLOBALS=(`find ${NVM_DIR}/versions/node -maxdepth 3 -type l -wholename '*/bin/*' | xargs -n1 basename | sort | uniq`)
+
+NODE_GLOBALS+=("node")
+NODE_GLOBALS+=("nvm")
+
+load_nvm () {
+    # This loads nvm
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  
+    # This loads nvm bash_completion
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  
 }
+
+## Define placeholder shell functions
+for cmd in "${NODE_GLOBALS[@]}"; do
+    eval "${cmd}(){ unset -f ${NODE_GLOBALS}; load_nvm; ${cmd} \$@ }"
+done
 
 
 ## -----------------------------------

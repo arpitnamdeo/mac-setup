@@ -7,10 +7,10 @@ IdentitiesOnly yes
 Host *
 	IdentityFile ~/.ssh/id_rsa
 
-# Key for IBM Github
-Host github.ibm.com
-  	HostName github.ibm.com
+# Key for example.com
+Host example.com
+  	HostName example.com
   	User git
-  	IdentityFile ~/.ssh/id_rsa_ibm_github
+  	IdentityFile ~/.ssh/id_rsa
   	
 # Add more Host sections similar to the one above as needed for other identities

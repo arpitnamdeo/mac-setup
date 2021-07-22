@@ -1,3 +1,5 @@
+zmodload zsh/zprof
+
 #------------------------------
 # Variables
 #------------------------------
@@ -15,6 +17,15 @@ export LS_COLORS
 ## -----------------------------------
 ## zsh options
 ## -----------------------------------
+# Keep history of `cd` as in with `pushd` and make `cd -<TAB>` work. Dirstack
+# DIRSTACKFILE="$HOME/.cache/zsh/dirs"
+# if [[ -f $DIRSTACKFILE ]] && [[ $#dirstack -eq 0 ]]; then
+#   dirstack=( ${(f)"$(< $DIRSTACKFILE)"} )
+#   [[ -d $dirstack[1] ]] && cd $dirstack[1]
+# fi
+# chpwd() {
+#   print -l $PWD ${(u)dirstack} >$DIRSTACKFILE
+# }
 DIRSTACKSIZE=16
 setopt auto_pushd pushd_silent pushd_to_home
 
@@ -54,9 +65,8 @@ unsetopt AUTO_REMOVE_SLASH
 fpath=(/usr/local/share/zsh-completions $fpath)
 
 if type brew &>/dev/null; then
-  FPATH=/usr/local/share/zsh/site-functions:$FPATH
+  FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
 fi
-
 
 # Completions
 zstyle ':completion:*' menu select=2 select=long-list
@@ -67,7 +77,6 @@ zstyle ':completion:*' select-prompt '%SScrolling active: current selection at %
 zstyle ':completion::complete:*' use-cache 1
 zstyle ':completion:*:descriptions' format '%U%F{cyan}%d%f%u'
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
-
 
 #------------------------------
 # Window title
@@ -94,12 +103,41 @@ case $TERM in
 esac
 
 ## -----------------------------------
+## File manager key binds
+## -----------------------------------
+cdUndoKey() {
+  popd
+  zle       reset-prompt
+  echo
+  ls
+  zle       reset-prompt
+}
+
+cdParentKey() {
+  pushd ..
+  zle       reset-prompt
+  echo
+  ls
+  zle       reset-prompt
+}
+
+zle -N                 cdParentKey
+zle -N                 cdUndoKey
+bindkey '^[[1;3A'      cdParentKey
+bindkey '^[[1;3D'      cdUndoKey
+
+## -----------------------------------
 ## iTerm shell integrations
 ## -----------------------------------
+test -e "${HOME}/.shell_config/iterm2/iterm2_shell_integration.zsh" && source "${HOME}/.shell_config/iterm2/iterm2_shell_integration.zsh"
 
-## Uncomment the following after installing iTerm Shell Integrations from iTerm application menu
-## test -e "${HOME}/.shell_config/iterm2/iterm2_shell_integration.zsh" && source "${HOME}/.shell_config/iterm2/iterm2_shell_integration.zsh"
 
+## -----------------------------------
+## Zsh Plugins
+## -----------------------------------
+
+# Plugin "k"
+test -e "${HOME}/.shell_config/zsh_plugins/k/k.sh" && source "${HOME}/.shell_config/zsh_plugins/k/k.sh"
 
 
 #------------------------------
@@ -110,78 +148,15 @@ source "/usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
 
 
 ## -----------------------------------
-## Zsh theming and prompts
+## Zsh theme
 ## -----------------------------------
 test -e "${HOME}/.shell_config/zsh_theme.sh" && source "${HOME}/.shell_config/zsh_theme.sh"
 
 
 ## -----------------------------------
-# Aliases
+## Load .profile for common elements
 ## -----------------------------------
-test -e "${HOME}/.shell_config/aliases.sh" && source "${HOME}/.shell_config/aliases.sh"
-
-
-#------------------------------
-# Colored man pages
-#------------------------------
-man() {
-  env \
-    LESS_TERMCAP_mb=$(printf "\e[1;31m") \
-    LESS_TERMCAP_md=$(printf "\e[1;31m") \
-    LESS_TERMCAP_me=$(printf "\e[0m") \
-    LESS_TERMCAP_se=$(printf "\e[0m") \
-    LESS_TERMCAP_so=$(printf "\e[1;44;33m") \
-    LESS_TERMCAP_ue=$(printf "\e[0m") \
-    LESS_TERMCAP_us=$(printf "\e[1;32m") \
-    man "$@"
-}
-
-
-## -----------------------------------
-## NVM
-## -----------------------------------
-
-##### nvm (node version manager) #####
-## Load Node and NPM Globals lazily
-## On first use, it will set up nvm, node and npm globals properly and replace the 
-## shell functions with the real one
-
-export NVM_DIR="$HOME/.nvm"
-declare -a NODE_GLOBALS=(`find ${NVM_DIR}/versions/node -maxdepth 3 -type l -wholename '*/bin/*' | xargs -n1 basename | sort | uniq`)
-
-NODE_GLOBALS+=("node")
-NODE_GLOBALS+=("nvm")
-
-load_nvm () {
-    # This loads nvm
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  
-    # This loads nvm bash_completion
-    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  
-}
-
-## Define placeholder shell functions
-for cmd in "${NODE_GLOBALS[@]}"; do
-    eval "${cmd}(){ unset -f ${NODE_GLOBALS}; load_nvm; ${cmd} \$@ }"
-done
-
-
-## -----------------------------------
-## SDKMan!
-## THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-## -----------------------------------
-export SDKMAN_DIR="$HOME/.sdkman"
-
-##### sdk (SDKMan!) #####
-# placeholder sdk shell function
-# On first use, it will set sdkman up properly which will replace the `sdk`
-# shell function with the real one
-sdk() {
-  # Load SDKMan!
-    [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
-
-    # invoke the real nvm function now
-    sdk "$@"
-}
+test -e "${HOME}/.profile" && source "${HOME}/.profile"
 
 
 ## -----------------------------------
@@ -205,5 +180,19 @@ zmodload zsh/complist
 autoload -Uz compinit
 compinit
 zstyle :compinstall filename '${HOME}/.zshrc'
+# if [ $(date +'%j') != $(/usr/bin/stat -f '%Sm' -t '%j' ${ZDOTDIR:-$HOME}/.zcompdump) ]; then
+#   compinit -D
+#   zstyle :compinstall filename '${HOME}/.zshrc'
+#   {
+#     # Compile zcompdump, if modified, to increase startup speed.
+#     zcompdump="${ZDOTDIR:-$HOME}/.zcompdump"
+#     if [[ -s "$zcompdump" && (! -s "${zcompdump}.zwc" || "$zcompdump" -nt "${zcompdump}.zwc") ]]; then
+#       zcompile "$zcompdump"
+#     fi
+#   } &!
+# else
+#   compinit -C
+# fi
 
-
+# added by travis gem
+[ ! -s /Users/arpit/.travis/travis.sh ] || source /Users/arpit/.travis/travis.sh

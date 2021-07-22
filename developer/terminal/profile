@@ -1,0 +1,74 @@
+## -----------------------------------
+## Aliases
+## -----------------------------------
+[[ -s "$HOME/.shell_config/aliases.sh" ]] && source "$HOME/.shell_config/aliases.sh"
+
+## -----------------------------------
+## Exports
+## -----------------------------------
+[[ -s "$HOME/.shell_config/exports.sh" ]] && source "$HOME/.shell_config/exports.sh"
+
+
+#------------------------------
+# Colored manuals
+#------------------------------
+man() {
+  env \
+    LESS_TERMCAP_mb=$(printf "\e[1;31m") \
+    LESS_TERMCAP_md=$(printf "\e[1;31m") \
+    LESS_TERMCAP_me=$(printf "\e[0m") \
+    LESS_TERMCAP_se=$(printf "\e[0m") \
+    LESS_TERMCAP_so=$(printf "\e[1;44;33m") \
+    LESS_TERMCAP_ue=$(printf "\e[0m") \
+    LESS_TERMCAP_us=$(printf "\e[1;32m") \
+    man "$@"
+}
+
+
+## -----------------------------------
+## NVM
+## -----------------------------------
+
+##### nvm (node version manager) #####
+## Load Node and NPM Globals lazily
+## On first use, it will set up nvm, node and npm globals properly and replace the 
+## shell functions with the real one
+
+export NVM_DIR="$HOME/.nvm"
+declare -a NODE_GLOBALS=(`find ${NVM_DIR}/versions/node -maxdepth 3 -type l -wholename '*/bin/*' | xargs -n1 basename | sort | uniq`)
+
+NODE_GLOBALS+=("node")
+NODE_GLOBALS+=("nvm")
+
+load_nvm () {
+    # This loads nvm
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  
+    # This loads nvm bash_completion
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  
+}
+
+## Define placeholder shell functions
+for cmd in "${NODE_GLOBALS[@]}"; do
+    eval "${cmd}(){ unset -f ${NODE_GLOBALS}; load_nvm; ${cmd} \$@ }"
+done
+
+
+## -----------------------------------
+## SDKMan!
+## THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+## -----------------------------------
+export SDKMAN_DIR="$HOME/.sdkman"
+# [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+
+##### sdk (SDKMan!) #####
+# placeholder sdk shell function
+# On first use, it will set sdkman up properly which will replace the `sdk`
+# shell function with the real one
+sdk() {
+	# Load SDKMan!
+  	[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+
+    # invoke the real sdk function now
+    sdk "$@"
+}
+

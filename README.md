@@ -10,6 +10,7 @@ _All the following commands are to be run using the Terminal app in MacOS_
 2. Install [Home-brew](https://brew.sh/)
 	```
 	/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+	brew analytics off
 	```
 3. Install Google Chrome and Firefox
 	```

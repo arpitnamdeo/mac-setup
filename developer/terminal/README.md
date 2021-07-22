@@ -28,8 +28,8 @@ _All the following commands are to be run using the Terminal app in MacOS_
 4. Install Fonts
 Install fonts for use with iTerm
     ```
-    brew tap caskroom/fonts
-    brew cask install font-firacode-nerd-font font-firacode-nerd-font-mono
+    brew tap homebrew/cask-fonts
+    brew cask install font-fira-code-nerd-font font-fira-mono-nerd-font
     ```
 5. Get a color scheme for iTerm from `https://iterm2colorschemes.com/`
 _The color scheme will be in the "schemes" folder in the downloaded archive with a .itermcolors_

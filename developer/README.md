@@ -14,12 +14,12 @@ _This guide assumes basic setup has been performed on the Mac._
 	```
 2. Install IDEs and other development tools
 	```
-	brew cask install visual-studio-code intellij-idea-ce postman docker
+	brew install visual-studio-code intellij-idea-ce postman docker
 	```
-3. Install Quick Look plugins
+3. [Optional - May not work with MacOS Catalina+] Install Quick Look plugins
 _Refer https://github.com/sindresorhus/quick-look-plugins for more_
 	```
-	brew cask install qlcolorcode qlstephen qlvideo qlmarkdown quicklook-json quicklook-csv webpquicklook
+	brew install qlcolorcode qlstephen qlvideo qlmarkdown quicklook-json quicklook-csv webpquicklook
 	```
 
 ### NodeJS
@@ -209,7 +209,6 @@ _There is a sample file in this repository for reference_
 		indent_style = space
 		indent_size = 2
 		```
-
 
 
 ## Setup a better terminal experience

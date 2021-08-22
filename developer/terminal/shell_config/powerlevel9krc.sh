@@ -58,6 +58,3 @@ POWERLEVEL9K_VCS_MODIFIED_FOREGROUND='black'
 POWERLEVEL9K_VCS_MODIFIED_BACKGROUND='yellow'
 
 
-# MUST be after setting PowerLevel9k variables to load options in the theme configuration
-source ~/.shell_config/powerlevel9k/powerlevel9k.zsh-theme
-

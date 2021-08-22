@@ -21,15 +21,15 @@ _All the following commands are to be run using the Terminal app in MacOS_
     ```
     mkdir ~/.shell_config
     ```
-3. Get [Powerlevel9k](https://github.com/bhilburn/powerlevel9k)
+3. Get [Powerlevel10k](https://github.com/romkatv/powerlevel10k)
     ```
-    git clone https://github.com/bhilburn/powerlevel9k.git ~/.shell_config/powerlevel9k
+    git clone https://github.com/romkatv/powerlevel10k.git ~/.shell_config/powerlevel10k
     ```
 4. Install Fonts
 Install fonts for use with iTerm
     ```
     brew tap homebrew/cask-fonts
-    brew cask install font-fira-code-nerd-font font-fira-mono-nerd-font
+    brew install font-fira-code-nerd-font font-fira-mono-nerd-font
     ```
 5. Get a color scheme for iTerm from `https://iterm2colorschemes.com/`
 _The color scheme will be in the "schemes" folder in the downloaded archive with a .itermcolors_

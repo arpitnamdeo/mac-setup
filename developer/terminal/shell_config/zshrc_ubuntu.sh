@@ -20,7 +20,7 @@ zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 setprompt() {
   setopt prompt_subst
 
-  if [[ -n "$SSH_CLIENT"  ||  -n "$SSH2_CLIENT" ]]; then
+  if [[ -n "$SSH_CLIENT"  ||  -n "$SSH2_CLIENT" ]]; then 
     p_host='%F{yellow}%M%f'
   else
     p_host='%F{green}%M%f'
@@ -53,3 +53,28 @@ RPROMPT='[%F{yellow}%?%f] [%D{%H:%M:%S}]'
 
 # Use prompt function defined above
 #setprompt
+
+
+## Cloud Native Developer Toolkit
+
+# KUBE_PS1 start
+KUBE_PS1_SYMBOL_ENABLE=true
+KUBE_PS1_SYMBOL_USE_IMG=true
+KUBE_PS1_NS_ENABLE=true
+
+function get_cluster_short() {
+  CLUSTER_NAME=$(echo $1 | awk -F / '{print $2}')
+  SERVER=$(grep -A 1 -B 1 "${CLUSTER_NAME}" ~/.kube/config | grep server | sed -E "s/ *server: (.*)/\1/g")
+  NEW_CLUSTER_NAMES=$(grep -A 1 -B 1 "${SERVER}" ~/.kube/config | grep name | grep -v ${CLUSTER_NAME} | sed -E "s/ *name: (.*)/\1/g")
+  NEW_CLUSTER_NAME=${NEW_CLUSTER_NAMES%$'\n'*}
+  if [[ -n "${NEW_CLUSTER_NAME}" ]]; then
+    echo "${NEW_CLUSTER_NAME}"
+  else
+    echo ${CLUSTER_NAME}
+  fi
+}
+
+KUBE_PS1_CLUSTER_FUNCTION=get_cluster_short
+
+source "${HOME}/bin/kube-ps1.sh"
+PROMPT='$(kube_ps1) '$PROMPT

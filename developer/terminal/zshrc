@@ -86,20 +86,20 @@ case $TERM in
     precmd () {
       #vcs_info
       print -Pn "\e]0;[%n@%M][%~]%#\a"
-    } 
+    }
     preexec () { print -Pn "\e]0;[%n@%M][%~]%# ($1)\a" }
     ;;
   screen|screen-256color)
-    precmd () { 
+    precmd () {
       #vcs_info
-      print -Pn "\e]83;title \"$1\"\a" 
-      print -Pn "\e]0;$TERM - (%L) [%n@%M]%# [%~]\a" 
+      print -Pn "\e]83;title \"$1\"\a"
+      print -Pn "\e]0;$TERM - (%L) [%n@%M]%# [%~]\a"
     }
-    preexec () { 
-      print -Pn "\e]83;title \"$1\"\a" 
-      print -Pn "\e]0;$TERM - (%L) [%n@%M]%# [%~] ($1)\a" 
+    preexec () {
+      print -Pn "\e]83;title \"$1\"\a"
+      print -Pn "\e]0;$TERM - (%L) [%n@%M]%# [%~] ($1)\a"
     }
-    ;; 
+    ;;
 esac
 
 ## -----------------------------------
@@ -131,7 +131,6 @@ bindkey '^[[1;3D'      cdUndoKey
 ## -----------------------------------
 test -e "${HOME}/.shell_config/iterm2/iterm2_shell_integration.zsh" && source "${HOME}/.shell_config/iterm2/iterm2_shell_integration.zsh"
 
-
 ## -----------------------------------
 ## Zsh Plugins
 ## -----------------------------------
@@ -145,6 +144,16 @@ test -e "${HOME}/.shell_config/zsh_plugins/k/k.sh" && source "${HOME}/.shell_con
 #------------------------------
 source "/usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 source "/usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+
+
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
+export PRELOAD_PLUGINS="true"
 
 
 ## -----------------------------------
@@ -163,6 +172,9 @@ test -e "${HOME}/.profile" && source "${HOME}/.profile"
 ## Path updates
 ## -----------------------------------
 
+# add yq@3 to path
+export PATH="/usr/local/opt/yq@3/bin:${HOME}/bin:$PATH"
+
 # eliminates duplicates in *paths
 typeset -gU cdpath fpath path
 
@@ -176,10 +188,11 @@ path=(
 ## -----------------------------------
 # Load compinit
 ## -----------------------------------
-zmodload zsh/complist 
+zmodload zsh/complist
 autoload -Uz compinit
 compinit
 zstyle :compinstall filename '${HOME}/.zshrc'
+
 # if [ $(date +'%j') != $(/usr/bin/stat -f '%Sm' -t '%j' ${ZDOTDIR:-$HOME}/.zcompdump) ]; then
 #   compinit -D
 #   zstyle :compinstall filename '${HOME}/.zshrc'
@@ -193,6 +206,3 @@ zstyle :compinstall filename '${HOME}/.zshrc'
 # else
 #   compinit -C
 # fi
-
-# added by travis gem
-[ ! -s /Users/arpit/.travis/travis.sh ] || source /Users/arpit/.travis/travis.sh

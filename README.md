@@ -10,13 +10,17 @@ _All the following commands are to be run using the Terminal app in MacOS_
 2. Install [Home-brew](https://brew.sh/)
 	```
 	/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+	```
+3. Turn off MacOS quarantine and Homebrew analytics
+	```
+	sudo defaults write com.apple.LaunchServices LSQuarantine -bool NO
 	brew analytics off
 	```
-3. Install Google Chrome and Firefox
+5. Install Google Chrome and Firefox
 	```
 	brew install google-chrome firefox
 	```
-4. Install useful Mac applications
+5. Install useful Mac applications
 	```
 	brew install 1password spectacle sublime-text
 	```
